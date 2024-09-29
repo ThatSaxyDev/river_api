@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:river_api/app/auth/controllers/auth_controller.dart';
 import 'package:river_api/app/auth/providers/auth_providers.dart';
+import 'package:river_api/app/home/views/home_view.dart';
 import 'package:river_api/models/user_model.dart';
 import 'package:river_api/shared/extensions.dart';
 import 'package:river_api/shared/failure.dart';
 import 'package:river_api/shared/regex.dart';
 
-class AuthStateNotifier extends Notifier<AuthState> {
+class AuthNotifier extends Notifier<AuthState> {
   late AuthController _authController;
   @override
   AuthState build() {
@@ -30,29 +31,47 @@ class AuthStateNotifier extends Notifier<AuthState> {
     required String password,
     required BuildContext context,
   }) async {
-    startLoading();
     if (!AppRegEx.regexEmail.hasMatch(email)) {
-      stopLoading();
-      'Email is invalid'.log();
+      showSnackBar(
+        context: context,
+        message: 'Email is invalid',
+        type: NotificationType.failure,
+      );
       return;
     }
 
     if (password.isEmpty) {
-      stopLoading();
-      'Password needed'.log();
+      showSnackBar(
+        context: context,
+        message: 'Password needed',
+        type: NotificationType.failure,
+      );
       return;
     }
+
+    startLoading();
 
     await _authController.login(
       password: password,
       email: email,
       onError: (Failure error) {
         stopLoading();
-        error.message.log();
+        showSnackBar(
+          context: context,
+          message: error.message,
+          type: NotificationType.failure,
+        );
       },
       onSuccess: () {
         stopLoading();
-        'logged in'.log();
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (context) => const HomeView(),
+        ));
+        showSnackBar(
+          context: context,
+          message: 'Logged in successfully',
+          type: NotificationType.success,
+        );
       },
     );
   }
@@ -73,4 +92,25 @@ class AuthState {
       isLoading: isLoading ?? this.isLoading,
     );
   }
+}
+
+void showSnackBar({
+  required BuildContext context,
+  required String message,
+  required NotificationType type,
+}) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text(message),
+      backgroundColor: switch (type) {
+        NotificationType.success => const Color.fromARGB(255, 50, 125, 89),
+        NotificationType.failure => Colors.redAccent,
+      },
+    ),
+  );
+}
+
+enum NotificationType {
+  success,
+  failure,
 }

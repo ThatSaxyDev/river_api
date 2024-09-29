@@ -11,58 +11,59 @@ import 'package:river_api/shared/failure.dart';
 import 'package:river_api/shared/type_defs.dart';
 
 class AuthRepository {
-  final DioClient _dioClient;
+  // final DioClient _dioClient;
   final Ref _ref;
   const AuthRepository({
-    required DioClient dioClient,
+    // required DioClient dioClient,
     required Ref ref,
-  })  : _dioClient = dioClient,
+  })  :
+        // _dioClient = dioClient,
         _ref = ref,
         super();
 
   //! login
-  FutureEither<UserModel> login({
-    required String password,
-    required String email,
-  }) async {
-    try {
-      //! MAKE REQUEST
-      final Map<String, dynamic> responseInMap = await _dioClient.post(
-        path: AppUrls.login,
-        payload: {
-          "password": password,
-          "email": email,
-        },
-      );
+  // FutureEither<UserModel> login({
+  //   required String password,
+  //   required String email,
+  // }) async {
+  //   try {
+  //     //! MAKE REQUEST
+  //     final Map<String, dynamic> responseInMap = await _dioClient.post(
+  //       path: AppUrls.login,
+  //       payload: {
+  //         "password": password,
+  //         "email": email,
+  //       },
+  //     );
 
-      if (responseInMap["status"] == 'success') {
-        responseInMap.log();
-        'login here'.log();
-        UserModel? user;
+  //     if (responseInMap["status"] == 'success') {
+  //       responseInMap.log();
+  //       'login here'.log();
+  //       UserModel? user;
 
-        // UserModel user = UserModel.fromMap(responseInMap["data"]["user"]);
+  //       // UserModel user = UserModel.fromMap(responseInMap["data"]["user"]);
 
-        // user.toString().log();
+  //       // user.toString().log();
 
-        // String token = responseInMap["data"]["token"];
+  //       // String token = responseInMap["data"]["token"];
 
-        // //! save token
-        // await SecureStorage.instance.write(key: Tokens.atck.name, value: token);
-        return right(user!);
-      } else {
-        "login Response Failure: $responseInMap".log();
+  //       // //! save token
+  //       // await SecureStorage.instance.write(key: Tokens.atck.name, value: token);
+  //       return right(user!);
+  //     } else {
+  //       "login Response Failure: $responseInMap".log();
 
-        return left(Failure(responseInMap["message"]));
-      }
-    } on DioException catch (exception) {
-      final AppDioException error =
-          AppDioException.fromDIOException(dioException: exception);
+  //       return left(Failure(responseInMap["message"]));
+  //     }
+  //   } on DioException catch (exception) {
+  //     final AppDioException error =
+  //         AppDioException.fromDIOException(dioException: exception);
 
-      return left(Failure(error.errorMessage));
-    } catch (e) {
-      return left(Failure(e.toString()));
-    }
-  }
+  //     return left(Failure(error.errorMessage));
+  //   } catch (e) {
+  //     return left(Failure(e.toString()));
+  //   }
+  // }
 
   //! simulate login
   FutureEither<UserModel> simulateLogin({
@@ -70,7 +71,7 @@ class AuthRepository {
     required String email,
   }) async {
     try {
-      await Future.delayed(const Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 4));
 
       // simulating a successful response
       final Map<String, dynamic> responseInMap = email == 'a@mail.com'
@@ -114,7 +115,7 @@ class AuthRepository {
   //! GET USERS
   Future<List<UserModel>> fetchUsers() async {
     // Simulate network delay
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 4));
 
     // Simulate a response with a list of users
     final List<Map<String, dynamic>> responseInMap = [

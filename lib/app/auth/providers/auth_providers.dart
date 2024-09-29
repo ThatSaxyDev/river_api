@@ -8,7 +8,11 @@ import 'package:river_api/services/dio/dio.dart';
 
 //! the auth repo provider
 final Provider<AuthRepository> authRepositoryProvider = Provider(
-    (ref) => AuthRepository(ref: ref, dioClient: ref.watch(dioClientProvider)));
+  (ref) => AuthRepository(
+    ref: ref,
+    // dioClient: ref.watch(dioClientProvider),
+  ),
+);
 
 //! the auth controller provider
 final authControllerProvider = Provider(
@@ -19,12 +23,17 @@ final authControllerProvider = Provider(
 );
 
 //! the auth state provider
-final authStateNotifierProvider =
-    NotifierProvider<AuthStateNotifier, AuthState>(() {
-  return AuthStateNotifier();
+final authNotifierProvider = NotifierProvider<AuthNotifier, AuthState>(() {
+  return AuthNotifier();
 });
 
 //! the user data notifier provider
 final userDataNotifierProvider = NotifierProvider<UserDataNotifier, UserModel?>(
   () => UserDataNotifier(),
 );
+
+//! future providers
+final fetchUserProvider = FutureProvider<List<UserModel>>((ref) {
+  final authRepository = ref.watch(authRepositoryProvider);
+  return authRepository.fetchUsers();
+});
